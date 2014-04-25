@@ -6,7 +6,6 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -215,8 +214,6 @@ public class Window
 		            
 		        } 
 		    });
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
 		
 		Composite composite_1 = new Composite(shell, SWT.NONE);
 		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 3, 1));
@@ -238,9 +235,5 @@ public class Window
 		});
 		
 		btnNewButton.setText("Submit");
-		
-		Composite composite_5 = new Composite(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
 	}
 }
