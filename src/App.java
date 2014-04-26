@@ -57,6 +57,8 @@ public class App
 
     private  PrivateKey priv; 
     private  PublicKey  pub;
+    
+    private  PublicKey theirPub;
 
     public App(Integer port, String ipAddress, Point p1, Point p2, Text status) {
         p1x = new BigInteger(Integer.toString(p1.x));
@@ -87,6 +89,10 @@ public class App
 
             sOut = new ObjectOutputStream(socket.getOutputStream());
             sIn  = new ObjectInputStream(socket.getInputStream());
+            
+            // Share our public key
+            sOut.writeObject(pub);
+            theirPub = (PublicKey)sIn.readObject();
             
             if (leader) {
                 readPointsWriteResults();
@@ -165,14 +171,13 @@ public class App
             // Write out the results that are encrypted with their public key
             writeObjectsOut(r1, r2); 
 
-            // Read in the decrypted results
-            Integer pr1 =  (Integer)sIn.readObject();
-            Integer pr2 =  (Integer)sIn.readObject();
+            // Read in the results encrypted with our public key
+            Integer pr1 =  getNextResult();
+            Integer pr2 =  getNextResult();
 
             // Add the decrypted results
             result.add(pr1);
             result.add(pr2);
-
         } catch (IOException | ClassNotFoundException e) {
         }
     }
@@ -185,9 +190,13 @@ public class App
 
             Integer intPr1 = getNextResult();
             Integer intPr2 = getNextResult();
+            
+            result.add(intPr1);
+            result.add(intPr2);
 
-            //Write the plain text results
-            writeObjectsOut(intPr1, intPr2); 
+            //Encrypt with their public key and write the results
+            writeObjectsOut(new EncryptedInteger(new BigInteger(intPr1.toString()), theirPub), 
+            		            new EncryptedInteger(new BigInteger(intPr2.toString()) ,theirPub)); 
         } catch (BigIntegerClassNotValid e) {
         }
     }
@@ -209,9 +218,8 @@ public class App
             if (isNegative(pr)) {
                 pr = pr.subtract(pub.getN()); // subtract N since answer is neg
             }
-
+            
             prs = pr.signum();
-            result.add(prs);
         } catch (IOException | ClassNotFoundException | BigIntegerClassNotValid e) {
         }
 
